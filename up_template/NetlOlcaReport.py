@@ -225,15 +225,15 @@ class NetlOlcaReport:
                 'https://cdnjs.cloudflare.com/ajax/libs/concrete.css/3.0.0/concrete.min.css',
                 '--mathjax',
                 '--include-before-body',
-                'template/before_body.html',
+                'resources/before_body.html',
                 '--include-after-body',
-                'template/after_body.html',
+                'resources/after_body.html',
             ]
         elif out_ext == 'DOCX':
             sp_list = [
                 'pandoc', from_file,
                 '-o', to_file,
-                '--reference-doc', 'template/template.docx',
+                '--reference-doc', 'resources/template.docx',
             ]
 
         try:
@@ -1045,7 +1045,7 @@ How to Cite This Document
         str
             File path
         """
-        return os.path.join("..", "img", self.logo)
+        return os.path.join("..", "resources", self.logo)
 
     def get_multiline_input(self, prompt, end_marker="EOF"):
         """
