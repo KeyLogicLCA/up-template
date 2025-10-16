@@ -31,7 +31,7 @@ running the menu-driven interface for the Jupyter Notebook unit process
 template.
 
 Last edited:
-    2024-11-01
+    2025-10-16
 """
 __all__ = [
     "Interface",
@@ -861,7 +861,7 @@ class Interface(object):
             self.calc_set = find_excel_files(my_dir)
 
         # Set okay flag to False for empty directories:
-        if self.num_files > 0:
+        if self.num_workbooks > 0:
             self.is_okay = True
         else:
             self.is_okay = False
