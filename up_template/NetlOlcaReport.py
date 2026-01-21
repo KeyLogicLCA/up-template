@@ -398,10 +398,12 @@ For example:
 ![](data/diagram.png)
 ```
 
+### Scenarios
+
 ### Input Flows
 {input_flows_md}
 
-## Output Flows
+### Output Flows
 {output_flows_md}
 
 ### Process Parameters
@@ -762,6 +764,9 @@ How to Cite This Document
                 "The following table provides process and global parameter "
                 "values and their associated uncertainty.\n\n"
             )
+            #Open scrollable table
+            md_table += '<div style ="width:100%; overflow:auto;">\n\n'
+            
             md_table += (
                 "| Scope | Name | Value | Uncertainty | Description |\n")
             md_table += (
@@ -812,6 +817,10 @@ How to Cite This Document
                 md_table += "| " + p_string + " |\n"
                 md_formula += p_form + "\n\n"
 
+        #Close scrollable table
+        if num_params > 0:
+            md_table += "\n</div>\n"
+            
         # Add the formulas before the parameter table.
         md_table = md_formula + md_table
 
