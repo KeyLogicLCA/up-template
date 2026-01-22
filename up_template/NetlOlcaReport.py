@@ -340,6 +340,18 @@ class NetlOlcaReport:
         if len(self.sources) > 0:
             sources_md = "\n\n".join(self.sources)
 
+        # Scenario attribute table (from workbook in DATA_DIR)
+        try:
+            scenario_table_md = scenario_attribute_table(
+                workbook_filename="DS_Stage5_O_Natural_Gas_Combustion_2014.01.xlsx",
+                sheet_name="PS",
+                header_row_excel=6,
+                start_col_excel="D",
+            )
+        except Exception as e:
+            logging.warning(f"Scenario attribute table could not be created: {e}")
+            scenario_table_md = "No scenario attributes available."
+
         # Add the calculations content from the filled workbook
         calculations_md = self.calculations_content or "No calculations available."
 
@@ -399,6 +411,7 @@ For example:
 ```
 
 ### Scenarios
+{scenario_table_md}
 
 ### Input Flows
 {input_flows_md}
@@ -414,6 +427,47 @@ For example:
 
 ### Calculations
 {calculations_md}
+
+### Impact Assessment Methodology
+LCI Method
+:   Attributional
+
+Process Type
+:   Unit Process
+
+Modeling Constraints
+:   This model assumes the composition of natural gas and associated production emissions are dependent on geographic region, 
+    and it accounts for these variations through the use of 30 regional parameters. In addition, five types of natural gas – 
+    based on their extraction technologies – are considered: conventional natural gas, coalbed methane (CBM), shale gas, 
+    tight gas, and associated gas.
+
+### Data Quality
+
+The following Data Quality Indicator (DQI) scores are assigned to this process
+using the DQI Matrix (from NETL LCI&C Guideline Document, adapted from Weidema and Wenaes)
+
+<div style="width:100%; overflow:auto; max-height:400px;">
+
+| DQI Indicator | Score | Basis for Score |
+|--------------|:-----:|----------------|
+| Source Reliability | **3** | Verified data with many assumptions or non-verified data from a quality source; source quality guidelines not fully met |
+| Completeness | **3** | Representative data from a sufficient number of sites, but over a less adequate period of time |
+| Temporal Correlation | **2** | Less than 6 years difference between the data period and the study reference period |
+| Geographical Correlation | **2** | Average data from a larger region including the area under study or data from a nearby region |
+| Technological Correlation | **1** | Data from the technology, process, or material under study |
+
+</div>
+
+### Data Source Information
+
+| Element | Description |
+|--------|-------------|
+| Data Completeness | All relevant flows captured |
+| Data Selection | This model uses the Environmental Protection Agency (EPA)’s Greenhouse Gas Reporting Program (GHGRP) and Greenhouse Gas Inventory (GHGI) for the 2017 reporting year to account for venting and fugitive emissions from the natural gas supply chain. These data are representative of 2016 operations in the U.S. oil and gas sectors. Additional information on equipment counts, emission events, and natural gas throughput are provided by Drilling Info (DI Desktop) and the Energy Information Administration (EIA). |
+| Data Treatment | The EPA’s 2017 GHGRP and GHGI account for most vented and fugitive emissions. The GHGRP double counts natural gas throughput; to mitigate this, throughput was scaled down by 19% for all basins except Permian, Gulf Coast, and Anadarko, which were not adjusted. For additional details on data treatment, see the referenced publication. |
+| Sampling Procedure | For information on how data were collected, see the referenced publication. |
+| Data Collection Period | 2017–2018 |
+| Use Advice | None |
 
 ## References
 {sources_md}
@@ -1299,9 +1353,9 @@ def _fix_formula(p_name, f_txt, in_line=False):
 
         # Put between latex equation markers
         if in_line:
-            new_txt = "$%s%" % new_txt
+            new_txt = f"${new_txt}$"
         else:
-            new_txt = "$$\n%s\n$$" % new_txt
+            new_txt = f"$$\n{new_txt}\n$$"
 
     return new_txt
 
@@ -1358,3 +1412,168 @@ def _fix_uncertainty(param):
         r_str = "%s (%s)" % (u_type, u_params)
 
     return r_str
+
+def scenario_attribute_table(
+    workbook_filename: str,
+    sheet_name: str = "PS",
+    *,
+    header_row_excel: int = 6,
+    start_col_excel: str = "D",
+    max_height_px: int = 600,
+    return_dataframe: bool = False,
+):
+    """Build scenario attribute table from scenario header strings in an Excel sheet.
+
+    Workbook must be located in DATA_DIR. Scenario names are assumed to be in the
+    header row (Excel row header_row_excel) starting at start_col_excel.
+    """
+    workbook_path = os.path.join(DATA_DIR, workbook_filename)
+    if not os.path.isfile(workbook_path):
+        raise OSError(f"Workbook not found in DATA_DIR: {workbook_path}")
+
+    # Convert Excel col letter(s) to 0-indexed integer
+    col_letter = str(start_col_excel).strip().upper()
+    if not col_letter or any(not ("A" <= c <= "Z") for c in col_letter):
+        raise ValueError(f"Invalid Excel column letter: {start_col_excel}")
+
+    start_col_index = 0
+    for c in col_letter:
+        start_col_index = start_col_index * 26 + (ord(c) - ord("A") + 1)
+    start_col_index -= 1
+
+    header_row_index = header_row_excel - 1
+    scenario_source_df = pd.read_excel(
+        workbook_path,
+        sheet_name=sheet_name,
+        header=header_row_index,
+        engine="openpyxl",
+    )
+
+    scenario_header_candidates = list(scenario_source_df.columns[start_col_index:])
+    scenario_names = []
+    for header_val in scenario_header_candidates:
+        if pd.isna(header_val):
+            continue
+        header_text = re.sub(r"\s+", " ", str(header_val)).strip().strip(",")
+        if header_text.startswith("External Combustion Boilers") or header_text.startswith("Internal Combustion Engines"):
+            scenario_names.append(header_text)
+
+    scenario_records = []
+    for scenario_id, scenario_name in enumerate(scenario_names, start=1):
+        name = re.sub(r"\s+", " ", str(scenario_name)).strip().strip(",")
+        parts = [p.strip() for p in name.split(",") if p.strip()]
+
+        tech = parts[0] if len(parts) > 0 else "NA"
+        sector = parts[1] if len(parts) > 1 else "NA"
+        fuel = parts[2] if len(parts) > 2 else "NA"
+        remainder = parts[3:] if len(parts) > 3 else []
+
+        regulatory_vintage = "NA"
+        size_class_mmbtu_hr = "NA"
+        firing_type = "NA"
+        operating_mode = "Standard"
+
+        if "External Combustion Boilers" in tech:
+            technology_family = "External Combustion Boiler"
+            equipment_category = "Boiler"
+
+            if "Pre-NSPS" in name:
+                regulatory_vintage = "Pre-NSPS"
+            elif "Post" in name and "NSPS" in name:
+                regulatory_vintage = "Post-NSPS"
+
+            if any(r.lower() == "cogeneration" for r in remainder):
+                operating_mode = "Cogeneration"
+                equipment_subtype = "Cogeneration"
+                control_technology = remainder[-1] if remainder else "NA"
+
+                scenario_records.append({
+                    "Scenario_ID": scenario_id,
+                    "Scenario_Name": name,
+                    "Technology_Family": technology_family,
+                    "Sector": sector,
+                    "Fuel": fuel,
+                    "Equipment_Category": equipment_category,
+                    "Equipment_Subtype": equipment_subtype,
+                    "Size_Class_MMBtu_hr": "NA",
+                    "Firing_Type": "NA",
+                    "Control_Technology": control_technology,
+                    "Regulatory_Vintage": regulatory_vintage,
+                    "Operating_Mode": operating_mode,
+                })
+                continue
+
+            if any("Tangentially Fired Units" in r for r in remainder):
+                equipment_subtype = "Tangential"
+                firing_type = "Tangential"
+            else:
+                equipment_subtype = "Non-tangential"
+                firing_type = "Non-tangential"
+                joined = " ".join(remainder)
+                if re.search(r">\s*100", joined):
+                    size_class_mmbtu_hr = ">100"
+                elif re.search(r"<\s*100", joined):
+                    size_class_mmbtu_hr = "<100"
+                elif re.search(r"10\s*-\s*100", joined):
+                    size_class_mmbtu_hr = "10-100"
+                elif re.search(r"<\s*10", joined):
+                    size_class_mmbtu_hr = "<10"
+
+            control_technology = remainder[-1] if remainder else "NA"
+
+        else:
+            technology_family = "Internal Combustion Engine"
+            equipment_category = "Engine"
+            equipment_subtype = remainder[0] if remainder else "NA"
+            control_technology = remainder[-1] if remainder else "NA"
+            operating_mode = "Cogeneration" if ":Cogeneration" in equipment_subtype else "Standard"
+            regulatory_vintage = "NA"
+            size_class_mmbtu_hr = "NA"
+            firing_type = "NA"
+
+        scenario_records.append({
+            "Scenario_ID": scenario_id,
+            "Scenario_Name": name,
+            "Technology_Family": technology_family,
+            "Sector": sector,
+            "Fuel": fuel,
+            "Equipment_Category": equipment_category,
+            "Equipment_Subtype": equipment_subtype,
+            "Size_Class_MMBtu_hr": size_class_mmbtu_hr,
+            "Firing_Type": firing_type,
+            "Control_Technology": control_technology,
+            "Regulatory_Vintage": regulatory_vintage,
+            "Operating_Mode": operating_mode,
+        })
+
+    scenario_columns = [
+        "Scenario_ID",
+        "Scenario_Name",
+        "Technology_Family",
+        "Sector",
+        "Fuel",
+        "Equipment_Category",
+        "Equipment_Subtype",
+        "Size_Class_MMBtu_hr",
+        "Firing_Type",
+        "Control_Technology",
+        "Regulatory_Vintage",
+        "Operating_Mode",
+    ]
+    scenario_table_df = pd.DataFrame(scenario_records)
+    for c in scenario_columns:
+        if c not in scenario_table_df.columns:
+            scenario_table_df[c] = "NA"
+    scenario_table_df = scenario_table_df[scenario_columns].fillna("NA")
+
+    scenario_table_md = (
+        f'<div style="width:100%; overflow:auto; max-height:{max_height_px}px;">\n\n'
+        f'{scenario_table_df.to_markdown(index=False)}\n\n'
+        f'</div>\n'
+    )
+
+    if return_dataframe:
+        return scenario_table_df, scenario_table_md
+    return scenario_table_md
+
+
