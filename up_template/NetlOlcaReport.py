@@ -367,6 +367,8 @@ class NetlOlcaReport:
 ## Brief Description
 {process_desc}
 
+### Technology Type
+
 # Metadata
 {process_doc_md}
 
@@ -469,6 +471,16 @@ using the DQI Matrix (from NETL LCI&C Guideline Document, adapted from Weidema a
 | Data Collection Period | 2017–2018 |
 | Use Advice | None |
 
+# Unit Process Use Information
+Use Advice
+:  
+
+Preferred Provider UPs
+:   
+
+Suggested Downstream UP
+:   
+
 ## References
 {sources_md}
 
@@ -484,6 +496,9 @@ Revision History
 
 How to Cite This Document
 :   TBA
+
+Archived
+:   -
 
 # Disclaimer/Terms of Use
 {self.disclaimer}
