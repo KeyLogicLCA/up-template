@@ -372,28 +372,6 @@ class NetlOlcaReport:
 # Metadata
 {process_doc_md}
 
-## Relevant Flows Included:
-
-Releases to Air
-:   - [ ] Greenhouse Gases
-    - [ ] Criteria Air Pollutants
-    - [ ] Other
-
-Releases to Water
-:   - [ ] Inorganic Emissions
-    - [ ] Organic Emissions
-    - [ ] Other
-
-Releases to Soil
-:   - [ ] Inorganic Emissions
-    - [ ] Organic Emissions
-    - [ ] Other
-
-Water Usage
-:   - [ ] Water Demand
-    - [ ] Water Consumption
-
-
 # Process Description
 
 ## Goal & Scope
@@ -404,25 +382,29 @@ Water Usage
 
 ## Methods
 
-### Block Flow Diagram
-Link to your block flow diagram.
-For example:
+### System Boundary Diagram
 
-```sh
 ![](data/diagram.png)
-```
 
 ### Scenarios
+<div style="width:100%; overflow:auto; max-height:400px;">
 {scenario_table_md}
+</div>
 
 ### Input Flows
+<div style="width:100%; overflow:auto; max-height:400px;">
 {input_flows_md}
+</div>
 
 ### Output Flows
+<div style="width:100%; overflow:auto; max-height:400px;">
 {output_flows_md}
+</div>
 
 ### Process Parameters
+<div style="width:100%; overflow:auto; max-height:400px;">
 {param_table_md}
+</div>
 
 ### Allocation
 {allocation_md}
@@ -469,11 +451,10 @@ using the DQI Matrix (from NETL LCI&C Guideline Document, adapted from Weidema a
 | Data Treatment | The EPA’s 2017 GHGRP and GHGI account for most vented and fugitive emissions. The GHGRP double counts natural gas throughput; to mitigate this, throughput was scaled down by 19% for all basins except Permian, Gulf Coast, and Anadarko, which were not adjusted. For additional details on data treatment, see the referenced publication. |
 | Sampling Procedure | For information on how data were collected, see the referenced publication. |
 | Data Collection Period | 2017–2018 |
-| Use Advice | None |
 
-# Unit Process Use Information
+## Unit Process Use Information
 Use Advice
-:  
+:
 
 Preferred Provider UPs
 :   
@@ -495,10 +476,10 @@ Revision History
 :   {version_number}
 
 How to Cite This Document
-:   TBA
+:   National Energy Technology Laboratory (NETL), Combustion of Natural Gas, 11/01/2014, https://edx.netl.doe.gov/dataset/lca-up-combustion-of-natural-gas, OSTI ID: 1509357
 
 Archived
-:   -
+:   False
 
 # Disclaimer/Terms of Use
 {self.disclaimer}
@@ -516,73 +497,103 @@ Archived
         """
         empty_rp = f"""# Overview
 
+
 ## Process Name
 
 ## Reference Flow
 
 ## Brief Description
 
+### Technology Type
+
 # Metadata
-
-## Relevant Flows Included:
-
-Releases to Air
-:   - [ ] Greenhouse Gases
-    - [ ] Criteria Air Pollutants
-    - [ ] Other
-
-Releases to Water
-:   - [ ] Inorganic Emissions
-    - [ ] Organic Emissions
-    - [ ] Other
-
-Releases to Soil
-:   - [ ] Inorganic Emissions
-    - [ ] Organic Emissions
-    - [ ] Other
-
-Water Usage
-:   - [ ] Water Demand
-    - [ ] Water Consumption
-
 
 # Process Description
 
 ## Goal & Scope
-<!-- Documentation - Administrative information - Project -->
 
 ## Boundary & Description
-<!-- Documentation - Data source information - Data selection -->
 
 ## Methods
 
-### Block Flow Diagram
+### System Boundary Diagram
+
+### Scenarios
 
 ### Input Flows
 
 ### Output Flows
 
 ### Process Parameters
-<!-- Add specific adjustable process parameters here if any -->
 
 ### Allocation
 
 ### Calculations
 
+### Impact Assessment Methodology
+LCI Method
+:   
+
+Process Type
+:   
+
+Modeling Constraints
+:   
+
+### Data Quality
+
+Data Quality Methodology: 
+
+<div style="width:100%; overflow:auto; max-height:400px;">
+
+| DQI Indicator | Score | Basis for Score |
+|--------------|:-----:|----------------|
+| Source Reliability |  |  |
+| Completeness |  |  |
+| Temporal Correlation |  |  |
+| Geographical Correlation |  |  |
+| Technological Correlation |  |  |
+
+</div>
+
+### Data Source Information
+
+| Element | Description |
+|--------|-------------|
+| Data Completeness |  |
+| Data Selection |  |
+| Data Treatment |  |
+| Sampling Procedure |  |
+| Data Collection Period |  |
+
+## Unit Process Use Information
+Use Advice
+:
+
+Preferred Provider UPs
+:   
+
+Suggested Downstream UP
+:   
+
 ## References
+
 
 # Document Control Information
 Date Created
-:   TBA
+:   
 
 Point of Contact
-:   TBA
+:   
 
 Revision History
-:   TBA
+:   
 
 How to Cite This Document
-:   TBA
+:   
+
+Archived
+:   
 
 # Disclaimer/Terms of Use
 {self.disclaimer}
