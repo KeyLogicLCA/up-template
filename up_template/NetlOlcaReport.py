@@ -387,23 +387,35 @@ class NetlOlcaReport:
 ![](data/diagram.png)
 
 ### Scenarios
+
 <div style="width:100%; overflow:auto; max-height:400px;">
+
 {scenario_table_md}
+
 </div>
 
 ### Input Flows
+
 <div style="width:100%; overflow:auto; max-height:400px;">
+
 {input_flows_md}
+
 </div>
 
 ### Output Flows
+
 <div style="width:100%; overflow:auto; max-height:400px;">
+
 {output_flows_md}
+
 </div>
 
 ### Process Parameters
+
 <div style="width:100%; overflow:auto; max-height:400px;">
+
 {param_table_md}
+
 </div>
 
 ### Allocation
@@ -548,11 +560,11 @@ Data Quality Methodology:
 
 | DQI Indicator | Score | Basis for Score |
 |--------------|:-----:|----------------|
-| Source Reliability |  |  |
-| Completeness |  |  |
-| Temporal Correlation |  |  |
-| Geographical Correlation |  |  |
-| Technological Correlation |  |  |
+|  |  |  |
+|  |  |  |
+|  |  |  |
+|  |  |  |
+|  |  |  |
 
 </div>
 
