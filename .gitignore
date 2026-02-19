@@ -4,6 +4,7 @@
 .vscode
 .DS_Store
 .ipynb_checkpoints
+.virtual_documents
 *.html
 __pycache__
 
