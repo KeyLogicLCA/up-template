@@ -12,8 +12,22 @@ readable formats, and exporting reports in Markdown, PDF, and Word formats.
 This module is a key part of the NETL Life Cycle Analysis (LCA) toolkit,
 designed for streamlined analysis and report generation.
 
+Examples:
+
+>>> from up_template import NetlOlcaReport
+>>> from netlolca import NetlOlca
+>>> n = NetlOlca()                          # initialize data manager
+>>> n.connect()                             # establish with IPC Server
+>>> n.read()                                # read openLCA database
+>>> r = NetlOlcaReport(n)                   # creates 'output' folder
+>>> ps_id = r.netlolca.get_spec_ids(        # find 1st product system UUID
+...     r.netlolca.get_spec_class("Product system")
+... )[0]
+>>> r.fetch_data(ps_id)                     # automated data scraping
+>>> r.convert_to_html()                     # create .md; render to .html
+
 Last Edited:
-    2024-11-01
+    2026-02-19
 """
 __all__ = [
     "NetlOlcaReport",
@@ -223,6 +237,8 @@ class NetlOlcaReport:
                 '--section-divs',
                 '--css',
                 'https://cdnjs.cloudflare.com/ajax/libs/concrete.css/3.0.0/concrete.min.css',
+                '--css',
+                'resources/styles.css',
                 '--mathjax',
                 '--include-before-body',
                 'resources/before_body.html',
@@ -388,15 +404,11 @@ class NetlOlcaReport:
 
 ### Scenarios
 
-<div style="width:100%; overflow:auto; max-height:400px;">
-
 {scenario_table_md}
-
-</div>
 
 ### Input Flows
 
-<div style="width:100%; overflow:auto; max-height:400px;">
+<div class="table-wrapper" markdown="block">
 
 {input_flows_md}
 
@@ -404,7 +416,7 @@ class NetlOlcaReport:
 
 ### Output Flows
 
-<div style="width:100%; overflow:auto; max-height:400px;">
+<div class="table-wrapper" markdown="block">
 
 {output_flows_md}
 
@@ -412,11 +424,7 @@ class NetlOlcaReport:
 
 ### Process Parameters
 
-<div style="width:100%; overflow:auto; max-height:400px;">
-
 {param_table_md}
-
-</div>
 
 ### Allocation
 {allocation_md}
@@ -432,9 +440,9 @@ Process Type
 :   Unit Process
 
 Modeling Constraints
-:   This model assumes the composition of natural gas and associated production emissions are dependent on geographic region, 
-    and it accounts for these variations through the use of 30 regional parameters. In addition, five types of natural gas – 
-    based on their extraction technologies – are considered: conventional natural gas, coalbed methane (CBM), shale gas, 
+:   This model assumes the composition of natural gas and associated production emissions are dependent on geographic region,
+    and it accounts for these variations through the use of 30 regional parameters. In addition, five types of natural gas –
+    based on their extraction technologies – are considered: conventional natural gas, coalbed methane (CBM), shale gas,
     tight gas, and associated gas.
 
 ### Data Quality
@@ -442,7 +450,7 @@ Modeling Constraints
 The following Data Quality Indicator (DQI) scores are assigned to this process
 using the DQI Matrix (from NETL LCI&C Guideline Document, adapted from Weidema and Wenaes)
 
-<div style="width:100%; overflow:auto; max-height:400px;">
+<div class="table-wrapper" markdown="block">
 
 | DQI Indicator | Score | Basis for Score |
 |--------------|:-----:|----------------|
@@ -469,10 +477,10 @@ Use Advice
 :
 
 Preferred Provider UPs
-:   
+:
 
 Suggested Downstream UP
-:   
+:
 
 ## References
 {sources_md}
@@ -544,17 +552,17 @@ Archived
 
 ### Impact Assessment Methodology
 LCI Method
-:   
+:
 
 Process Type
-:   
+:
 
 Modeling Constraints
-:   
+:
 
 ### Data Quality
 
-Data Quality Methodology: 
+Data Quality Methodology:
 
 <div style="width:100%; overflow:auto; max-height:400px;">
 
@@ -583,29 +591,29 @@ Use Advice
 :
 
 Preferred Provider UPs
-:   
+:
 
 Suggested Downstream UP
-:   
+:
 
 ## References
 
 
 # Document Control Information
 Date Created
-:   
+:
 
 Point of Contact
-:   
+:
 
 Revision History
-:   
+:
 
 How to Cite This Document
-:   
+:
 
 Archived
-:   
+:
 
 # Disclaimer/Terms of Use
 {self.disclaimer}
@@ -652,8 +660,13 @@ Archived
                 self.project_doc = self.format_project_doc(raw_process_doc)
                 self.poc = self.format_poc(raw_process_doc)
 
-            param_list = self.netlolca.find_process_parameters(uuid)
-            self.param_table = self.format_parameter_table(param_list)
+            # NEW: EY25 test case uses the supplemental MD table [260219;TWD]
+            # param_list = self.netlolca.find_process_parameters(uuid)
+            # self.param_table = self.format_parameter_table(param_list)
+            self.param_table = '<div class="horizontal-scroll-except-first-column" markdown="block">'
+            self.param_table += '\n\n'
+            self.param_table += read_markdown_table("up_test_parameters.txt")
+            self.param_table += "\n\n</div>"
 
             sources = self.netlolca.get_sources(uuid, False)
             self.sources = [self.format_source(x) for x in sources]
@@ -779,8 +792,11 @@ Archived
                 comp = flows['category'][i]
                 dq = flows['dq'][i]
                 name = flows['name'][i]
-                # HOTFIX: rounds to 3 significant figures in scientific not.
-                quantity = "%0.3E" % flows['amount'][i]
+                # HOTFIX: for scenarios, use formula if available [260219; TWD]
+                quantity = flows['amountFormula'][i]
+                if quantity is None:
+                    # HOTFIX: round to 3 sig figs in scientific notation
+                    quantity = "%0.3E" % flows['amount'][i]
                 unit = flows['unit'][i]
                 flows_markdown += (
                     f"| {comp} | {name} | {quantity} | {unit} | {dq} |\n"
@@ -857,8 +873,8 @@ Archived
                 "values and their associated uncertainty.\n\n"
             )
             #Open scrollable table
-            md_table += '<div style ="width:100%; overflow:auto;">\n\n'
-            
+            md_table += '<div class="table-wrapper" markdown="block">\n\n'
+
             md_table += (
                 "| Scope | Name | Value | Uncertainty | Description |\n")
             md_table += (
@@ -909,10 +925,10 @@ Archived
                 md_table += "| " + p_string + " |\n"
                 md_formula += p_form + "\n\n"
 
-        #Close scrollable table
+        # Close scrollable table
         if num_params > 0:
             md_table += "\n</div>\n"
-            
+
         # Add the formulas before the parameter table.
         md_table = md_formula + md_table
 
@@ -1451,6 +1467,35 @@ def _fix_uncertainty(param):
 
     return r_str
 
+
+def read_markdown_table(md_file):
+    """Helper function to read a markdown table from a file.
+
+    Parameters
+    ----------
+    md_file : str
+        Markdown file name.
+        Note: file must be located in the ``DATA_DIR`` directory.
+
+    Returns
+    -------
+    str
+        Markdown table as a Python string.
+
+    Raises
+    ------
+    OSError
+        If the file does not exist in the ``DATA_DIR``.
+    """
+    file_path = os.path.join(DATA_DIR, md_file)
+    if not os.path.isfile(file_path):
+        raise OSError("Failed to find %s in %s!" % (md_file, DATA_DIR))
+    with open(file_path, 'r') as f:
+        my_data = f.readlines()  # newline character is in the string
+    my_str = "".join(my_data)
+    return my_str
+
+
 def scenario_attribute_table(
     workbook_filename: str,
     sheet_name: str = "PS",
@@ -1615,3 +1660,18 @@ def scenario_attribute_table(
     return scenario_table_md
 
 
+#
+# SANDBOX
+#
+if __name__ == '__main__':
+    from up_template import NetlOlcaReport
+    from netlolca import NetlOlca
+    n = NetlOlca()                          # initialize data manager
+    n.connect()                             # establish with IPC Server
+    n.read()                                # read openLCA database
+    r = NetlOlcaReport(n)                   # creates 'output' folder
+    ps_id = r.netlolca.get_spec_ids(        # find 1st product system UUID
+        r.netlolca.get_spec_class("Product system")
+    )[0]
+    r.fetch_data(ps_id)                     # automated data scraping
+    r.convert_to_html()                     # create .md; render to .html
