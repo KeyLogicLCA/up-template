@@ -512,19 +512,38 @@ Archived
 
 ## Process Name
 
+Format: "Base name; treatment received, production route(s), standard(s) fulfilled; production or consumption type, location type; quantitative flow properties"
+
 ## Reference Flow
 
 ## Brief Description
 
-### Technology Type
+High-level process summary that communicates the basic technology and what is included in the boundary.
 
-# Metadata
+- Functional Unit: 1 unit of quantitative reference flow
+- Co-products: List names, if applicable; otherwise, N/A
+- Default co-product approach: If applicable; otherwise, N/A. Examples include system expansion, mass allocation, etc. - list what is used and if there are any restrictions.
+- Data source: Abbreviated citation: (Author, Year). Name should align with source in Documentation tab.
 
-# Process Description
+State the intended use.
 
-## Goal & Scope
+### Technology
 
-## Boundary & Description
+High level technology categorization, such as natural gas, bio fuels, etc.
+
+#### Description
+
+Enter a brief technology description of the model, answering question such as: “What technology is modeled?” or, “Are there any modifications?”
+
+## Metadata
+
+#### Goal & Scope
+
+Define the purpose, and boundaries of the unit process, specifying what is included or excluded in the inventory.
+
+#### Boundary & Description
+
+Describes the specific cutoff points that determine which inputs, outputs, and life cycle stages are included or excluded in the inventory.
 
 ## Methods
 
