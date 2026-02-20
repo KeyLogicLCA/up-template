@@ -24,6 +24,7 @@ if __name__ == '__main__':
         packages=['up_template'],
         install_requires=[
             "netlolca @ git+https://github.com/NETL-RIC/netlolca#egg=netlolca",
+            "openpyxl",
             "pandas",
             "sympy",
             "tabulate",
