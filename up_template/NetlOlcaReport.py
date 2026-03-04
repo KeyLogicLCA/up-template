@@ -27,7 +27,7 @@ Examples:
 >>> r.convert_to_html()                     # create .md; render to .html
 
 Last Edited:
-    2026-02-19
+    2026-03-04
 """
 __all__ = [
     "NetlOlcaReport",
@@ -517,73 +517,91 @@ Archived
         """
         empty_rp = f"""# Overview
 
+_The following template has instructions included under each section in italics._
 
 ## Process Name
 
-Format: "Base name; treatment received, production route(s), standard(s) fulfilled; production or consumption type, location type; quantitative flow properties"
+_Process naming format should be based on the following: "Base name; treatment received, production route(s), standard(s) fulfilled; production or consumption type, location type; quantitative flow properties"_
 
 ## Reference Flow
 
+_Copy and paste the quantitative reference flow for the process including the flow amount, units, and name._
+
 ## Brief Description
 
-High-level process summary that communicates the basic technology and what is included in the boundary.
+_High-level process summary that communicates the basic technology and what is included in the boundary; see example below._
 
-- Functional Unit: 1 unit of quantitative reference flow
-- Co-products: List names, if applicable; otherwise, N/A
-- Default co-product approach: If applicable; otherwise, N/A. Examples include system expansion, mass allocation, etc. - list what is used and if there are any restrictions.
-- Data source: Abbreviated citation: (Author, Year). Name should align with source in Documentation tab.
+- Process Type: _State whether this is a Unit Process or System Process_
+- Inventory Method: _State whether this is Attributional or Consequential_
+- Technology Type: _High level technology categorization, such as natural gas, or bio fuels_
+- Unit Process Boundary: Gate-to-Gate (GG)
+- Co-products: _List names, if applicable; otherwise, N/A_
+- Co-product allocation: _If applicable; otherwise, N/A. Examples include system expansion and mass allocation; list what is used and if there are any restrictions._
+- Scenarios: _Yes or no (e.g., link to [Scenarios](#scenarios) section)_
+- Location: _Geographic region associated with the unit process_
+- Valid From: _Year or date format_
+- Valid Until: _Year or date format_
+- Unit Process Creation Date: _May be different from report date_
+- Data Quantity Score: _The process DQI score (e.g., link to [Data Quality](#data-quality) for explanation of scoring)_
+- Data Completeness: _Link to [Data Source Information](#data-source-information) for more information_
 
-State the intended use.
+_Conclude with the stated intended use._
 
-### Technology
+# Process Description
 
-High level technology categorization, such as natural gas, bio fuels, etc.
+## Goal & Scope
 
-#### Description
+_Define the purpose, and boundaries of the unit process, specifying what is included or excluded in the inventory._
 
-Enter a brief technology description of the model, answering question such as: “What technology is modeled?” or, “Are there any modifications?”
+## Process Boundary
 
-## Metadata
+_Describes the specific cutoff points that determine which inputs, outputs, and life cycle stages are included or excluded in the inventory._
 
-#### Goal & Scope
+_Also, include a graphic of the box diagram for your process._
 
-Define the purpose, and boundaries of the unit process, specifying what is included or excluded in the inventory.
+## Input Flows
 
-#### Boundary & Description
+_Provide an introduction (e.g., "The table below provides a list of resource flows for this process.") and provide a table of resources with columns: 'Compartment', 'Flow Name', 'Quantity', 'Unit', and 'DQI' (automated in Python)._
 
-Describes the specific cutoff points that determine which inputs, outputs, and life cycle stages are included or excluded in the inventory.
+## Output Flows
 
-## Methods
+_Provide an introduction (e.g., "The table below provides a list of emission flows for this process.") and provide a table of resources with columns: 'Compartment', 'Flow Name', 'Quantity', 'Unit', and 'DQI' (automated in Python)._
 
-### System Boundary Diagram
+## Preferred Providers
 
-### Scenarios
+_Include a process or description of upstream providers for each of the product flows identified in the input table._
 
-### Input Flows
+## Suggested Downstream Uses
 
-### Output Flows
+_Include a process or description of process, models, or domains where the use of this unit process may be applicable._
 
-### Process Parameters
+# Methods
 
-### Allocation
+## Scenarios
 
-### Calculations
+_For natural gas unit processes, there are often scenarios that may be described in more detail here._
 
-### Impact Assessment Methodology
-LCI Method
-:
+## Allocation
 
-Process Type
-:
+_State whether any allocation methods were used across co-products or by-production identified in the outputs table._
 
-Modeling Constraints
-:
 
-### Data Quality
+## Calculations and Supplements
 
-Data Quality Methodology:
+_Include links and descriptions to additional resources that were utilized in creating this report and how they were utilized._
+_This includes, but is not limited to Excel workbooks, Python scripts, Jupyter notebooks, and other data files._
 
-<div style="width:100%; overflow:auto; max-height:400px;">
+## Modeling Assumptions
+
+_List any assumptions and known limitations to the utility or applicability of this unit process._
+
+# Data
+
+## Data Quality
+
+_Provide an overview of the data quality index utilized for this process, and include a table of its scores (see below for example empty table)._
+
+<div class="table-wrapper" markdown="block">
 
 | DQI Indicator | Score | Basis for Score |
 |--------------|:-----:|----------------|
@@ -595,7 +613,11 @@ Data Quality Methodology:
 
 </div>
 
-### Data Source Information
+## Data Source Information
+
+_Additional data source metadata is included here (e.g., Data Completeness, Data Selection, Data Treatment, Sampling Procedure, and Data Collection Period), which should all be automated from openLCA (see below for empty table example)._
+
+<div class="table-wrapper" markdown="block">
 
 | Element | Description |
 |--------|-------------|
@@ -605,36 +627,48 @@ Data Quality Methodology:
 | Sampling Procedure |  |
 | Data Collection Period |  |
 
-## Unit Process Use Information
-Use Advice
-:
+</div>
 
-Preferred Provider UPs
-:
-
-Suggested Downstream UP
-:
 
 ## References
 
+_List the references cited in this report following a standard style (e.g., APA or IEEE)._
+
+# Use Information
+
+Use Advice
+:   _Describe the intended application and any additional uses._
+
+Access and Restrictions
+:   Neither the U.S. Department of Energy (DOE) National Energy Technology Laboratory (NETL) nor any person acting on behalf of these organizations:
+
+    A.  Makes any warranty or representation, express or implied, with respect to the accuracy, completeness, or usefulness of the information contained in this document, or that the use of any information, apparatus, method, or process disclosed in this document may not infringe on privately owned rights; or
+
+    B.  Assumes any liability with this report as to its use, or damages resulting from the use of any information, apparatus, method, or process disclosed in this document.
+
+    Reference herein to any specific commercial product, process, or service by trade name, trademark, manufacturer, or otherwise, does not necessarily constitute or imply its endorsement, recommendation, or favoring by NETL.  The views and opinions of the authors expressed herein do not necessarily state or reflect those of NETL.
 
 # Document Control Information
+
 Date Created
-:
+:   _The date when the report was finalized._
 
 Point of Contact
-:
+:   _Name and email address._
 
 Revision History
-:
+:   _Version number. If other than 1.0, consider including a list of changes._
 
 How to Cite This Document
-:
+:   _Recommended citation (full text)._
 
 Archived
-:
+:   _True/False (Yes/No) to indicate the active (false) or superseded (true) status._
 
 # Disclaimer/Terms of Use
+
+_Standard federal disclaimer (see default language below)._
+
 {self.disclaimer}
         """
 
