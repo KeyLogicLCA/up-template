@@ -27,7 +27,7 @@ Examples:
 >>> r.convert_to_html()                     # create .md; render to .html
 
 Last Edited:
-    2026-03-04
+    2026-03-05
 """
 __all__ = [
     "NetlOlcaReport",
@@ -330,6 +330,9 @@ class NetlOlcaReport:
 
         Notes
         -----
+        This is a semi-automated report for the natural gas combustion unit
+        process.
+
         Class attributes are updated with fetched data, see :func:`fetch_data`.
 
         Returns
@@ -356,7 +359,7 @@ class NetlOlcaReport:
         if len(self.sources) > 0:
             sources_md = "\n\n".join(self.sources)
 
-        # Scenario attribute table (from workbook in DATA_DIR)
+        # Issue #8. Scenario attribute table (from workbook in DATA_DIR).
         try:
             scenario_table_md = scenario_attribute_table(
                 workbook_filename="DS_Stage5_O_Natural_Gas_Combustion_2014.01.xlsx",
@@ -371,7 +374,7 @@ class NetlOlcaReport:
         # Add the calculations content from the filled workbook
         calculations_md = self.calculations_content or "No calculations available."
 
-        # Create markdown report
+        # Issue #8. Create markdown report (this has hard-coded values).
         report_md = f"""# Overview
 
 ## Process Name
@@ -381,32 +384,22 @@ class NetlOlcaReport:
 {ref_flow}
 
 ## Brief Description
-{process_desc}
-
-### Technology Type
-
-# Metadata
 {process_doc_md}
+
 
 # Process Description
 
 ## Goal & Scope
-{project_doc_md}
+{process_desc}
 
-## Boundary & Description
+## Process Boundary
 {boundary_desc}
-
-## Methods
-
-### System Boundary Diagram
 
 ![](data/diagram.png)
 
-### Scenarios
-
-{scenario_table_md}
-
 ### Input Flows
+
+The table below provides a list of resource flows for this process.
 
 <div class="table-wrapper" markdown="block">
 
@@ -416,87 +409,113 @@ class NetlOlcaReport:
 
 ### Output Flows
 
+The table below provides a list of emission flows for this process.
+
 <div class="table-wrapper" markdown="block">
 
 {output_flows_md}
 
 </div>
 
-### Process Parameters
+## Preferred Providers
+
+_For each input product flow, add a statement as to its potential provider process(es)._
+
+## Suggested Downstream Uses
+
+_Based on the quantitative reference flow, add a statement as to what processes may use this flow as a resource (if any)._
+
+
+# Methods
+
+## Scenarios
+
+The following table describes the scenarios used in this process.
+
+{scenario_table_md}
+
+## Process Parameters
+
+The following table provides parameter quantities for each of the scenarios defined [above](#scenarios).
+These parameters represent the emissions found in the [output flow table](#output-flows).
 
 {param_table_md}
 
-### Allocation
+## Allocation
 {allocation_md}
 
-### Calculations
-{calculations_md}
+## Calculations and Supplements
 
-### Impact Assessment Methodology
-LCI Method
-:   Attributional
+This report utilized the following supplemental files:
 
-Process Type
-:   Unit Process
+- .xlsx
+    * _Include any workbooks used._
+- .py
+    * _Include any Python scripts (or Jupyter notebooks) used._
+- .zolca
+    * _Include the openLCA .zolca (or JSON-LD)._
 
-Modeling Constraints
-:   This model assumes the composition of natural gas and associated production emissions are dependent on geographic region,
-    and it accounts for these variations through the use of 30 regional parameters. In addition, five types of natural gas –
-    based on their extraction technologies – are considered: conventional natural gas, coalbed methane (CBM), shale gas,
-    tight gas, and associated gas.
 
-### Data Quality
+## Modeling Assumptions
+
+- _List the modeling assumptions, which may be found in "Modeling constants" section for process documentation in openLCA._
+
+# Data
+
+## Data Quality
 
 The following Data Quality Indicator (DQI) scores are assigned to this process
-using the DQI Matrix (from NETL LCI&C Guideline Document, adapted from Weidema and Wenaes)
+using the DQI Matrix.
 
 <div class="table-wrapper" markdown="block">
 
 | DQI Indicator | Score | Basis for Score |
 |--------------|:-----:|----------------|
-| Source Reliability | **3** | Verified data with many assumptions or non-verified data from a quality source; source quality guidelines not fully met |
-| Completeness | **3** | Representative data from a sufficient number of sites, but over a less adequate period of time |
-| Temporal Correlation | **2** | Less than 6 years difference between the data period and the study reference period |
-| Geographical Correlation | **2** | Average data from a larger region including the area under study or data from a nearby region |
-| Technological Correlation | **1** | Data from the technology, process, or material under study |
+| Source Reliability | **x** | _description_ |
+| Completeness | **x** | _description_ |
+| Temporal Correlation | **x** | _description_ |
+| Geographical Correlation | **x** | _description_ |
+| Technological Correlation | **x** | _description_ |
 
 </div>
 
-### Data Source Information
+## Data Source Information
+
+_Copy the values from the named fields below from openLCA's process documentation into the table._
 
 | Element | Description |
 |--------|-------------|
-| Data Completeness | All relevant flows captured |
-| Data Selection | This model uses the Environmental Protection Agency (EPA)’s Greenhouse Gas Reporting Program (GHGRP) and Greenhouse Gas Inventory (GHGI) for the 2017 reporting year to account for venting and fugitive emissions from the natural gas supply chain. These data are representative of 2016 operations in the U.S. oil and gas sectors. Additional information on equipment counts, emission events, and natural gas throughput are provided by Drilling Info (DI Desktop) and the Energy Information Administration (EIA). |
-| Data Treatment | The EPA’s 2017 GHGRP and GHGI account for most vented and fugitive emissions. The GHGRP double counts natural gas throughput; to mitigate this, throughput was scaled down by 19% for all basins except Permian, Gulf Coast, and Anadarko, which were not adjusted. For additional details on data treatment, see the referenced publication. |
-| Sampling Procedure | For information on how data were collected, see the referenced publication. |
-| Data Collection Period | 2017–2018 |
-
-## Unit Process Use Information
-Use Advice
-:
-
-Preferred Provider UPs
-:
-
-Suggested Downstream UP
-:
+| Data Completeness |  |
+| Data Selection |  |
+| Data Treatment |  |
+| Sampling Procedure |  |
+| Data Collection Period |  |
 
 ## References
 {sources_md}
 
+
+# Use Information
+
+Use Advice
+:   _Copy text from "Intended Application" field in openLCA._
+
+Access and Restrictions
+:   _Copy text from "Access and use restrictions" field in openLCA._
+
+
 # Document Control Information
-Date Created
+Report Created:
 :   {create_date}
 
-Point of Contact
+Point of Contact:
 :   {project_poc_md}
 
-Revision History
+Revision History:
 :   {version_number}
 
-How to Cite This Document
-:   National Energy Technology Laboratory (NETL), Combustion of Natural Gas, 11/01/2014, https://edx.netl.doe.gov/dataset/lca-up-combustion-of-natural-gas, OSTI ID: 1509357
+How to Cite This Document:
+:   _Copied from EDX submission._
 
 Archived
 :   False
@@ -534,7 +553,7 @@ _High-level process summary that communicates the basic technology and what is i
 - Process Type: _State whether this is a Unit Process or System Process_
 - Inventory Method: _State whether this is Attributional or Consequential_
 - Technology Type: _High level technology categorization, such as natural gas, or bio fuels_
-- Unit Process Boundary: Gate-to-Gate (GG)
+- Unit Process Boundary: _State whether the process is Cradle-to-Grave, Cradle-to-Gate, Gate-to-Gate, etc._
 - Co-products: _List names, if applicable; otherwise, N/A_
 - Co-product allocation: _If applicable; otherwise, N/A. Examples include system expansion and mass allocation; list what is used and if there are any restrictions._
 - Scenarios: _Yes or no (e.g., link to [Scenarios](#scenarios) section)_
