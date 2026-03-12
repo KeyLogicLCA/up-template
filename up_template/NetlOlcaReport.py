@@ -20,14 +20,12 @@ Examples:
 >>> n.connect()                             # establish with IPC Server
 >>> n.read()                                # read openLCA database
 >>> r = NetlOlcaReport(n)                   # creates 'output' folder
->>> ps_id = r.netlolca.get_spec_ids(        # find 1st product system UUID
-...     r.netlolca.get_spec_class("Product system")
-... )[0]
+>>> ps_id = r.product_systems[0]            # find 1st product system UUID
 >>> r.fetch_data(ps_id)                     # automated data scraping
 >>> r.convert_to_html()                     # create .md; render to .html
 
 Last Edited:
-    2026-03-05
+    2026-03-12
 """
 __all__ = [
     "NetlOlcaReport",
@@ -66,7 +64,7 @@ OUTPUT_DIR = "output"
 ##############################################################################
 # CLASSES
 ##############################################################################
-class NetlOlcaReport:
+class NetlOlcaReport(object):
     """A report generating class for the Jupyter Notebook unit process
     template.
 
@@ -189,6 +187,16 @@ class NetlOlcaReport:
         )
 
     # \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    # Class Properties
+    # ////////////////////////////////////////////////////////////////////////
+    @property
+    def product_systems(self):
+        """List of product system UUIDs"""
+        return self.netlolca.get_spec_ids(
+            self.netlolca.get_spec_class("Product system")
+        )
+
+    # \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     # Class Function Definitions
     # ////////////////////////////////////////////////////////////////////////
     def check_output_dir(self):
@@ -239,6 +247,8 @@ class NetlOlcaReport:
                 'https://cdnjs.cloudflare.com/ajax/libs/concrete.css/3.0.0/concrete.min.css',
                 '--css',
                 'resources/styles.css',
+                '--metadata',
+                f'title=NETL UP Library | {self.reference_name}',
                 '--mathjax',
                 '--include-before-body',
                 'resources/before_body.html',
@@ -1187,18 +1197,18 @@ _Standard federal disclaimer (see default language below)._
         if self.reference_name:
             # No spaces in file names
             p1 = re.compile("\\s+")
-            r_name = re.sub(p1, "_", self.reference_name)
+            r_name = re.sub(p1, "-", self.reference_name)
 
             # No special characters in file names
             p2 = re.compile("[/@.,&'\\\\\\(|\\)<>#;]+")
-            r_name = re.sub(p2, "_", r_name)
+            r_name = re.sub(p2, "-", r_name)
 
-            # Reduce extra underscores
-            p3 = re.compile("_+")
-            r_name = re.sub(p3, "_", r_name)
+            # Reduce extra dashes
+            p3 = re.compile("-+")
+            r_name = re.sub(p3, "-", r_name)
 
-            # Drop trailing underscore
-            if r_name[-1] == "_":
+            # Drop trailing dash
+            if r_name[-1] == "-":
                 r_name = r_name[0:-1]
 
             r_name += ext
@@ -1325,8 +1335,14 @@ _Standard federal disclaimer (see default language below)._
         else:
             self.md = md_txt
 
-    def save_markdown(self):
+    def save_markdown(self, blank=False):
         """Generate markdown report and save to file.
+
+        Parameters
+        ----------
+        blank : bool (optional)
+            Whether to save a blank template.
+            Defaults to false.
 
         Notes
         -----
@@ -1334,8 +1350,18 @@ _Standard federal disclaimer (see default language below)._
             file name that defaults to the reference process name.
         2.  This method re-creates the markdown report based on fetched data;
             any changes to the original markdown will be overwritten!
+
+        Examples
+        --------
+        >>> r = NetlOlcaReport(NetlOlca()) # initialize empty class
+        >>> r.save_markdown(blank=True)    # create empty template
         """
-        self.md = self.create_report_markdown()
+        if blank:
+            if self.reference_name is None:
+                self.reference_name = "blank-report"
+            self.md = self.empty_template()
+        else:
+            self.md = self.create_report_markdown()
         file_path = self.get_file_path('md')
         with open(file_path, 'w', encoding='utf-8', newline='\n') as f:
             f.write(self.md)
