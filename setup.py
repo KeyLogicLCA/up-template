@@ -19,7 +19,7 @@ if __name__ == '__main__':
 
     setup(
         name="up_template",
-        version="3.0.0",
+        version="4.5.0",
         license="CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
         packages=['up_template'],
         install_requires=[

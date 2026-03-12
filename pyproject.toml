@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "up_template"
-version = "3.0.0"
+version = "4.5.0"
 description = "The NETL Unit Process Template and Report Generator"
 readme = "README.md"
 authors = [
