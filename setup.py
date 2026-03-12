@@ -37,7 +37,7 @@ if __name__ == '__main__':
         long_description_content_type="text/markdown",
         url="https://github.com/NETL-RIC/up_template",
         classifiers=[
-            'Development Status :: 5 - Production/Stable',
+            'Development Status :: 4 - Beta',
             'Intended Audience :: Developers',
             'License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication',
             'Programming Language :: Python :: 3',
