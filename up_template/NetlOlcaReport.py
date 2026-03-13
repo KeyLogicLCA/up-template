@@ -25,7 +25,7 @@ Examples:
 >>> r.convert_to_html()                     # create .md; render to .html
 
 Last Edited:
-    2026-03-12
+    2026-03-13
 """
 __all__ = [
     "NetlOlcaReport",
@@ -248,7 +248,8 @@ class NetlOlcaReport(object):
                 '--css',
                 'resources/styles.css',
                 '--metadata',
-                f'title=NETL UP Library | {self.reference_name}',
+                f'pagetitle={self.reference_name}',
+                '--title-prefix=NETL UP Library',
                 '--mathjax',
                 '--include-before-body',
                 'resources/before_body.html',
